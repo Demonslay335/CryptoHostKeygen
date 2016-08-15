@@ -21,13 +21,7 @@ namespace CryptoHostKeygen
         public Form1()
         {
             InitializeComponent();
-            TwitterLink.Links.Add(0, TwitterLink.Text.Length, "https://twitter.com/demonslay335");
             PasswordTextbox.Text = GenerateKey();
-        }
-
-        private void TwitterLink_LinkClicked(object sender, System.Windows.Forms.LinkLabelLinkClickedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(e.Link.LinkData.ToString());
         }
 
         public static void Decrypt()
@@ -62,15 +56,15 @@ namespace CryptoHostKeygen
 
         public static String GenerateKey()
         {
-            String cpu = smethod_6();
-            String hdd = smethod_7("C");
-            String mobo = smethod_8();
-            String SHA1 = Conversions.ToString(smethod_9(cpu + hdd + mobo));
+            String cpu = GetProcessorId();
+            String hdd = GetVolumeSerial("C");
+            String mobo = GetMotherboardID();
+            String SHA1 = Conversions.ToString(stringhash(cpu + hdd + mobo));
             String username = Interaction.Environ("username");
             return SHA1 + username;
         }
 
-        public static string smethod_6()
+        public static string GetProcessorId()
         {
             string result = "";
             try
@@ -105,7 +99,7 @@ namespace CryptoHostKeygen
             return result;
         }
 
-        internal static string smethod_7(string string_6 = "C")
+        internal static string GetVolumeSerial(string string_6 = "C")
         {
             string result = "";
             try
@@ -121,7 +115,7 @@ namespace CryptoHostKeygen
             }
             return result;
         }
-        internal static string smethod_8()
+        internal static string GetMotherboardID()
         {
             string result = "";
             try
@@ -156,24 +150,28 @@ namespace CryptoHostKeygen
             return result;
         }
 
-        public static object smethod_9(string string_6)
-        {
-            object result ="";
-            try
-            {
-                UTF8Encoding uTF8Encoding = new UTF8Encoding();
-                SHA1CryptoServiceProvider sHA1CryptoServiceProvider = new SHA1CryptoServiceProvider();
-                byte[] value = sHA1CryptoServiceProvider.ComputeHash(uTF8Encoding.GetBytes(string_6));
-                string_6 = BitConverter.ToString(value).Replace("-", "");
-                result = string_6;
-            }
-            catch (Exception arg_37_0)
-            {
-                ProjectData.SetProjectError(arg_37_0);
-                ProjectData.ClearProjectError();
-            }
-            return result;
-        }
+        public static object stringhash(string str)
+		{
+			string result = "";
+			try
+			{
+				UTF8Encoding uTF8Encoding = new UTF8Encoding();
+				SHA1CryptoServiceProvider sHA1CryptoServiceProvider = new SHA1CryptoServiceProvider();
+				byte[] value = sHA1CryptoServiceProvider.ComputeHash(uTF8Encoding.GetBytes(str));
+				str = BitConverter.ToString(value).Replace("-", "");
+				result = str;
+			}
+			catch (Exception arg_35_0)
+			{
+				ProjectData.SetProjectError(arg_35_0);
+				ProjectData.ClearProjectError();
+			}
+			return result;
+		}
 
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            new AboutBox().ShowDialog();
+        }
     }
 }
